@@ -1,12 +1,11 @@
-import client
-import utils
+import ClientServerClass
 
-myClient = client.Client()
+myClient = ClientServerClass.Client()
 myClient.addr = "127.0.0.1"
 myClient.port = 22222
 
 myClient.connect()
-mess = myClient.receiveShortString()
-print("[CLIENT] J'ai recu :", mess, end='')
+myClient.sendFile("./utils.py")
+print("[CLIENT] J'ai envoyé mon fichier!\n", end='')
 
 myClient.closeConnection()

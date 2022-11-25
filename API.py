@@ -29,7 +29,6 @@ def recevoir(objet):
 
 	if (isinstance(objet, ClientServerClass.Client) or insinstace (objet, ClientServerClass.Serveur)) :
 		objet.receiveAll()
-		Serveur.receiveAll()
 
 
 def fin_communication(objet,port):

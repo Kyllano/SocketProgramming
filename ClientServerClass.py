@@ -4,7 +4,7 @@ import utils
 class Client :
     def __init__(self, port:int = 0, addr:str = None):
         #socket créé
-        self.sock = socket.socket()
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.port = port
         self.addr = addr
 
@@ -97,7 +97,7 @@ class Server :
                     self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 except socket.error as err :
                     print("Creation du socket impossible : %s"%(err))
-                    return None, None
+                    return None
 
                 self.sock.bind(('', self.port)) #Socket connecté au port
 
@@ -106,7 +106,7 @@ class Server :
             return addr
         else :
             print("Numero de port invalide")
-            return None, None
+            return None
     
     #Permet d'envoyer des informations quelconques, nécessites qu'elles soient sous forme de bytes
     def send(self, message : bytes) :

@@ -86,36 +86,39 @@ class Server :
     def __init__(self, port:int = None):
         self.sock = None
         self.port = port
+        self.conn = None
 
     #Permet de lancer le serveur
     def start(self) :
         if (utils.checkValidPort(self.port)) :
-            try :
-                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            except socket.error as err :
-                print("Creation du socket impossible : %s"%(err))
-                return None, None
+            if (self.sock == None) :
+                try :
+                    self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                except socket.error as err :
+                    print("Creation du socket impossible : %s"%(err))
+                    return None, None
 
-            self.sock.bind(('', self.port)) #Socket connecté au port
+                self.sock.bind(('', self.port)) #Socket connecté au port
+
             self.sock.listen(5) #On écoute et on met 5 requêtes de connections en attente avant de refuser (5 étant la norme)
-            conn, addr = self.sock.accept()
-            return conn,addr
+            self.conn, addr = self.sock.accept()
+            return addr
         else :
             print("Numero de port invalide")
             return None, None
     
     #Permet d'envoyer des informations quelconques, nécessites qu'elles soient sous forme de bytes
-    def send(self, conn : socket.socket, message : bytes) :
-        conn.send(message)
+    def send(self, message : bytes) :
+        self.conn.send(message)
 
     #Permet d'envoyer une chaine de caractère
-    def sendString(self, conn : socket.socket, message : str) :
-        conn.send(message.encode())
+    def sendString(self, message : str) :
+        self.conn.send(message.encode())
 
     #Permet d'envoyer un fichier en tant que bytes, nécessite que le fichier existe
     #Retourne None en cas d'erreur et la longueur du fichier envoyé en cas de reussite
-    def sendFile(self, conn : socket.socket, filename) :
+    def sendFile(self, filename : str) :
         try:
             file = open(filename, 'rb')
         except OSError :
@@ -123,26 +126,26 @@ class Server :
             return None
         
         content = file.read()
-        conn.sendall(content)
+        self.conn.sendall(content)
         file.close()
         return len(content)
 
     #Permet de recevoir une chaine de caractère courte, idéale pour tester une connexion
-    def receiveShortString(self, conn : socket.socket) :
-        message = conn.recv(1024)
+    def receiveShortString(self) :
+        message = self.conn.recv(1024)
         return message.decode()
 
     #Permet de recevoir jusque 4096 bytes envoyés. Due au fait que généralement, les longs message ne sont pas des strings, il est à l'utilisateur de décoder l'information
-    def receive(self, conn : socket.socket) :
-        message = conn.recv(4096)
+    def receive(self) :
+        message = self.conn.recv(4096)
         return message
     
     #Permet de recevoir des messages de tailles indeterminés. Ici aussi, on n'effetue pas de traitement sur l'information, on ne fait que la recevoir
-    def receiveAll(self, conn : socket.socket) :
+    def receiveAll(self) :
         TaillBuff = 4096
         data = b''
         while True :
-            recv = conn.recv(4096)
+            recv = self.conn.recv(4096)
             data += recv
             if (len(recv) < TaillBuff) :
                 break
@@ -150,7 +153,7 @@ class Server :
 
     #Permet de recevoir un fichier envoyé
     #retourne la taille du fichier ou None si erreur
-    def receiveFile(self, conn : socket.socket, filename) :
+    def receiveFile(self, filename) :
         try:
             file = open(filename, 'wb')
         except OSError :
@@ -160,7 +163,7 @@ class Server :
         TaillBuff = 4096
         taille = 0
         while True :
-            recvfile = conn.recv(4096)
+            recvfile = self.conn.recv(4096)
             file.write(recvfile)
             taille += len(recvfile)
             if (len(recvfile) < TaillBuff) :
@@ -168,5 +171,6 @@ class Server :
         file.close()
         return taille
 
-    def closeConnection(self, conn : socket.socket) :
-        conn.close()
+    def closeConnection(self) :
+        self.conn.close()
+        self.conn = None

@@ -17,14 +17,20 @@ myClient.closeConnection()
 
 myServer = ClientServerClass.Server()
 myServer.port = 22222
-conn, addr = myServer.start()
+addr = myServer.start()
 
-if (conn != None) :
+if (myServer.conn != None) :
     print("connection etablie ! Client est :")
     print(addr)
 else :
     print("erreur :(")
     sys.exit(1)
 
-myServer.sendString(conn, "Coucou!\n")
-myServer.closeConnection(conn)
+myServer.sendString("Coucou!\n")
+myServer.closeConnection()
+
+myServer.start()
+
+print("reconnexion effectuée")
+
+myServer.closeConnection()

@@ -35,13 +35,19 @@ def envoie(objet, message : str):
 
 	if (isinstance(objet, ClientServerClass.Client) or isinstance(objet, ClientServerClass.Serveur)) :
 		objet.send(message.encode('utf-8'))
+	else :
+		print("L'instance données est invalide")
+		return None
 		
 	
 #Fonction permettant de recevoir 
 def recevoir(objet): 
 
 	if (isinstance(objet, ClientServerClass.Client) or isinstance(objet, ClientServerClass.Serveur)) :
-		objet.receiveAll()
+		return objet.receiveAll().decode('utf-8')
+	else :
+		print("L'instance données est invalide")
+		return None
 
 
 def fin_communication(objet):

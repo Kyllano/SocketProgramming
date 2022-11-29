@@ -1,6 +1,20 @@
 import ClientServerClass
 import sys
+import API
 
+
+"""
+client = API.creerInstance("client", 22222, "localhost")
+API.initialisation_communication(client)
+API.envoie(client, "hello!")
+print(API.recevoir(client))
+API.fin_communication(client)
+"""
+serveur = API.creerInstance("server", 22222)
+API.initialisation_communication(serveur)
+API.envoie(serveur, "coucou")
+print(API.recevoir(serveur))
+API.fin_communication(serveur)
 
 """
 myClient = ClientServerClass.Client()
@@ -13,18 +27,24 @@ retour = myClient.receiveAll()
 print("[CLIENT] J'ai recu tout mes machins! Mon retour :",retour)
 
 myClient.closeConnection()
-"""
 
 myServer = ClientServerClass.Server()
 myServer.port = 22222
-conn, addr = myServer.start()
+addr = myServer.start()
 
-if (conn != None) :
+if (myServer.conn != None) :
     print("connection etablie ! Client est :")
     print(addr)
 else :
     print("erreur :(")
     sys.exit(1)
 
-myServer.sendString(conn, "Coucou!\n")
-myServer.closeConnection(conn)
+myServer.sendString("Coucou!\n")
+myServer.closeConnection()
+
+myServer.start()
+
+print("reconnexion effectuée")
+
+myServer.closeConnection()
+"""

@@ -3,12 +3,18 @@ import sys
 import API
 
 
+"""
 client = API.creerInstance("client", 22222, "localhost")
 API.initialisation_communication(client)
 API.envoie(client, "hello!")
 print(API.recevoir(client))
 API.fin_communication(client)
-
+"""
+serveur = API.creerInstance("server", 22222)
+API.initialisation_communication(serveur)
+API.envoie(serveur, "coucou")
+print(API.recevoir(serveur))
+API.fin_communication(serveur)
 
 """
 myClient = ClientServerClass.Client()

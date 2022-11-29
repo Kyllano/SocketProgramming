@@ -21,11 +21,10 @@ def creerInstance(typeInstance : str, port : int, addr : str = None) :
 #Fonction permetant d'initialiser la connection
 def initialisation_communication(objet): 
 	if (isinstance(objet, ClientServerClass.Client)) :
-		objet.connect()
-		return 1
-	elif (isinstance(objet, ClientServerClass.Serveur)) :
-		objet.start()
-		return 1
+		return objet.connect()
+	elif (isinstance(objet, ClientServerClass.Server)) :
+		return objet.start()
+		
 	else :
 		print("L'instance donnée est invalide")
 		return 0
@@ -33,7 +32,7 @@ def initialisation_communication(objet):
 #Fonction permettant d'envoyer un message
 def envoie(objet, message : str):
 
-	if (isinstance(objet, ClientServerClass.Client) or isinstance(objet, ClientServerClass.Serveur)) :
+	if (isinstance(objet, ClientServerClass.Client) or isinstance(objet, ClientServerClass.Server)) :
 		objet.send(message.encode('utf-8'))
 	else :
 		print("L'instance données est invalide")
@@ -43,7 +42,7 @@ def envoie(objet, message : str):
 #Fonction permettant de recevoir 
 def recevoir(objet): 
 
-	if (isinstance(objet, ClientServerClass.Client) or isinstance(objet, ClientServerClass.Serveur)) :
+	if (isinstance(objet, ClientServerClass.Client) or isinstance(objet, ClientServerClass.Server)) :
 		return objet.receiveAll().decode('utf-8')
 	else :
 		print("L'instance données est invalide")
@@ -52,6 +51,10 @@ def recevoir(objet):
 
 def fin_communication(objet):
 
-	if (isinstance(objet, ClientServerClass.Client) or isinstance(objet, ClientServerClass.Serveur)) :
+	if (isinstance(objet, ClientServerClass.Client) or isinstance(objet, ClientServerClass.Server)) :
 		objet.closeConnection()
+		return 0
+	else :
+		print("L'instance données est invalide")
+		return None
 
